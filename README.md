@@ -50,6 +50,24 @@ Held-out: **acc 0.905, ECE 0.049** (temple-run 1.00, snake 0.939, tic-tac-toe 0.
 See the [model card](https://huggingface.co/Brutalsky111/Snapjudge) for architecture,
 training curve, speed table and honest limits.
 
+## Try it live (Gradio arena)
+
+Watch the model play Snake and Tic-Tac-Toe by itself — no install needed:
+
+- **Live demo:** https://huggingface.co/spaces/Brutalsky111/Snapjudge-arena
+
+Deploy it yourself with the 3 files in `space/` (`app.py`, `requirements.txt`, `README.md`):
+1. Create a Space at https://huggingface.co/new-space — Gradio SDK, CPU, Public.
+2. Upload the 3 files via the Space's Files page.
+3. Wait for the build — the app downloads the weights from the model repo automatically.
+
+Or run the arena locally:
+
+```bash
+pip install -r space/requirements.txt
+python3 space/app.py
+```
+
 ## License
 
 Apache 2.0. Methodology inspired by Laya (Convai Innovations, Apache 2.0).
