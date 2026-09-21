@@ -1,0 +1,18 @@
+# weights & checkpoints (live on Hugging Face instead)
+gamelaya_ckpt/
+hf_snapjudge/
+*.safetensors
+*.bin
+*.pt
+
+# secrets (never commit tokens)
+.env
+.hf_token
+
+# python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# logs
+*.log
