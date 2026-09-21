@@ -18,7 +18,6 @@ snapjudge/        # runtime: common.py (model+head+RLCD), agent.py, router.py, d
 run_train.py     # training entrypoint (CE pretrain + RLCD + temperature fit)
 demo_snapjudge.py # 3-game demo via GameRouter
 space/           # Gradio arena app (app.py + requirements.txt) for HF Spaces
-repush_readme.py # re-upload model card only
 ```
 
 ## Quickstart (weights from Hub)
