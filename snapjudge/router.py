@@ -79,3 +79,42 @@ class GameRouter:
         return res
 
     system_one = predict
+
+    def predict_batch(self, requests):
+        """Routed batches: route each request, group by checkpoint, score each group
+        in shared forward passes. Answers identical to one predict() per request."""
+        # route first (sub-ms, pure python)
+        routed = []
+        for req in requests:
+            if isinstance(req, dict) and "state" in req:
+                state, qs, m = req["state"], req["questions"], req.get("model")
+            else:  # tuple (state, questions[, model])
+                state = req[0]; qs = req[1]; m = req[2] if len(req) > 2 else None
+            d = self.route(state, qs, model=m)
+            routed.append((state, qs, d))
+        # group indices by model key
+        from collections import defaultdict
+        groups = defaultdict(list)
+        for i, (state, qs, d) in enumerate(routed):
+            groups[d["model"]].append(i)
+        results = [None] * len(routed)
+        for model_key, idxs in groups.items():
+            agent = self._agents.get(model_key)
+            if agent is None:
+                if not self._agents:
+                    raise RuntimeError("GameRouter has no agent attached.")
+                agent = next(iter(self._agents.values()))
+            states = [routed[i][0] for i in idxs]
+            qsl = [routed[i][1] for i in idxs]
+            # use batch path when available, else loop (identical answers either way)
+            if hasattr(agent, "predict_batch"):
+                outs = agent.predict_batch(states, qsl)
+            else:
+                outs = [agent.system_one(s, q) for s, q in zip(states, qsl)]
+            for i, out in zip(idxs, outs):
+                out["routing"] = dict(routed[i][2])
+                # fallback note if agent was missing
+                if model_key not in self._agents:
+                    out["routing"]["model"] = "fallback"
+                results[i] = out
+        return results
